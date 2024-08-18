@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>网站框架</title>
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .menu {
+      width: 200px;
+      background-color: #f1f1f1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .menu-item {
+      cursor: pointer;
+      padding: 10px 0;
+    }
+
+    .menu-item.active {
+      font-weight: bold;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .slider {
+      width: 10px;
+      background-color: #ccc;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .slider-handle {
+      width: 10px;
+      height: 40px;
+      background-color: #ccc;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu">
+    <div class="menu-item">概要</div>
+    <div class="menu-item">Article 2</div>
+    <div class="menu-item">Article 3</div>
+    <div class="menu-item">Article 4</div>
+    <div class="menu-item">Article 5</div>
+    <div class="menu-item">Article 6</div>
+    <div class="menu-item">Article 7</div>
+    <div class="menu-item">Article 8</div>
+    <div class="menu-item">Article 9</div>
+    <div class="menu-item">Article 10</div>
+    <div class="menu-item">Article 11</div>
+    <div class="menu-item">Article 12</div>
+    <div class="menu-item">Article 13</div>
+    <div class="menu-item">Article 14</div>
+    <div class="menu-item">Article 15</div>
+    <div class="menu-item">Article 16</div>
+    <div class="menu-item">Article 17</div>
+    <div class="menu-item">Article 18</div>
+    <div class="menu-item">Article 19</div>
+    <div class="menu-item">Article 20</div>
+    <div class="menu-item">Article 21</div>
+    <div class="menu-item">Article 22</div>
+
+
+    <!-- 添加更多的菜单项 -->
+  </div>
+  <div class="slider">
+    <div class="slider-handle"></div>
+  </div>
+  <div class="content">
+    <h1>Welcome to the website</h1>
+    <p>Click on a menu item to view the corresponding article.</p>
+  </div>
+
+  <script>
+    const menuItems = document.querySelectorAll('.menu-item');
+    const content = document.querySelector('.content');
+    const slider = document.querySelector('.slider');
+    const sliderHandle = document.querySelector('.slider-handle');
+
+    let menuScrollY = 0;
+
+    menuItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        //活跃
+        menuItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        //显示相应的文章
+        content.innerHTML = `<h1>Article ${index + 1}</h1><p>This is the content of Article ${index + 1}.</p>`;
+        fetch(`/document/${index}`)
+        .then(response => {
+        console.log('Response received', response);
+        if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.text();
+        })
+        .then(htmlContent => {
+        console.log('HTML content received:', htmlContent);
+        content.innerHTML = htmlContent;
+        })
+        .catch(error => console.error('Error fetching document:', error));
+
+      });
+    });
+
+    sliderHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+
+      const initialY = e.clientY;
+      const initialScrollY = menuScrollY;
+
+      const handleMouseMove = (event) => {
+        const deltaY = event.clientY - initialY;
+        menuScrollY = initialScrollY - deltaY;
+        document.querySelector('.menu').scrollTop = menuScrollY;
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+      });
+    });
+  </script>
+</body>
+</html>
