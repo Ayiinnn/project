@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>访谈网站</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        #menu {
+            width: 20%;
+            overflow-y: scroll;
+            border-right: 1px solid #ccc;
+        }
+        #content {
+            width: 60%;
+            overflow-y: scroll;
+            padding: 20px;
+        }
+        #slider1, #slider2 {
+            width: 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slider {
+            writing-mode: bt-lr;
+            height: 80%;
+        }
+    </style>
+</head>
+<body>
+    <div id="slider1">
+        <input type="range" min="0" max="100" value="0" class="slider" id="menuSlider">
+    </div>
+    <div id="menu">
+        <!-- 文章标题将从特定地址加载 -->
+    </div>
+    <div id="content">
+        <!-- 文章内容将从特定地址加载 -->
+    </div>
+    <div id="slider2">
+        <input type="range" min="0" max="100" value="0" class="slider" id="contentSlider">
+    </div>
+
+    <script>
+        // 加载文章标题
+        const articleTitles = ["article1", "article2", "article3"];
+
+        const menu = document.getElementById('menu');
+        const content = document.getElementById('content');
+
+        // 加载文章内容
+        articleTitles.forEach(title => {
+            let div = document.createElement('div');
+            div.textContent = title;
+            div.style.cursor = 'pointer';
+            div.onclick = () => {
+                fetch(`${title}.html`)
+                    .then(response => response.text())
+                    .then(data => {
+                        content.innerHTML = data;
+                    })
+                    .catch(error => {
+                        content.innerHTML = "无法加载文章内容。";
+                        console.error('Error loading article:', error);
+                    });
+            };
+            menu.appendChild(div);
+        });
+
+        // 滑块1
+        document.getElementById('menuSlider').oninput = function() {
+            menu.scrollTop = (menu.scrollHeight - menu.clientHeight) * (this.value / 100);
+        };
+
+        // 滑块
+        document.getElementById('contentSlider').oninput = function() {
+            content.scrollTop = (content.scrollHeight - content.clientHeight) * (this.value / 100);
+        };
+    </script>
+</body>
+</html>
